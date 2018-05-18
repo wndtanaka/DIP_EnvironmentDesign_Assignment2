@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    bool isOpen = false;
+    public bool isOpen = false;
     [SerializeField]
     float rayRange = 2f;
     [SerializeField]

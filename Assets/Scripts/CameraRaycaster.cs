@@ -21,26 +21,47 @@ namespace UnityStandardAssets.Characters.FirstPerson
         GameObject interactPanel;
         [SerializeField]
         Text interactText;
+        [SerializeField]
+        RawImage mapImage;
+        [SerializeField]
+        RawImage miniMap;
 
         CameraLook cameraLook;
         RigidbodyFirstPersonController rb;
 
         bool isOpen = false;
         bool isSeated = false;
+        bool isMapOpen = false;
 
         InputController controller;
-
-
 
         void Start()
         {
             rb = GetComponent<RigidbodyFirstPersonController>();
             cameraLook = GetComponent<CameraLook>();
             controller = GameManager.Instance.InputController;
+            interactPanel.SetActive(true);
         }
 
         void Update()
         {
+            if (controller.Map && isMapOpen)
+            {
+                mapImage.gameObject.SetActive(false);
+                isMapOpen = !isMapOpen;
+                rb.enabled = true;
+                miniMap.gameObject.SetActive(true);
+            }
+            else if (controller.Map && !isMapOpen)
+            {
+                mapImage.gameObject.SetActive(true);
+                isMapOpen = !isMapOpen;
+                rb.enabled = false;
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                miniMap.gameObject.SetActive(false);
+            }
+
             if (isSeated)
             {
                 interactPanel.SetActive(true);
@@ -62,12 +83,20 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 #region Door Raycaster
                 if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Door"))
                 {
+                    Door door = hit.transform.GetComponent<Door>();
                     interactPanel.SetActive(true);
-                    interactText.text = "'E' to Open";
+                    if (door.isOpen)
+                    {
+                        interactText.text = "'E' to Close";
+                    }
+                    else
+                    {
+                        interactText.text = "'E' to Open";
+                    }
+                    
                     // Open and close door mechanics, door able to open outwards depends on player position
                     if (controller.Interact)
                     {
-                        Door door = hit.transform.GetComponent<Door>();
                         door.DoorRaycast(hit);
                     }
                 }
@@ -96,6 +125,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
                     Gate gate = hit.transform.GetComponent<Gate>();
                     interactPanel.SetActive(true);
                     if (gate.isRightDoorOpen)
+                    {
+                        interactText.text = "'E' to Close";
+                    }
+                    else
+                    {
+                        interactText.text = "'E' to Open";
+                    }
+
+                    if (gate.isLeftDoorOpen)
                     {
                         interactText.text = "'E' to Close";
                     }

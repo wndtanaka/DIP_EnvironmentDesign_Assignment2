@@ -9,11 +9,14 @@ public class InputController : MonoBehaviour
     public bool LeftClick;
     [HideInInspector]
     public bool Interact;
+    [HideInInspector]
+    public bool Map;
 
     void Update()
     {
         LeftClick = Input.GetMouseButtonDown(0);
         Interact = Input.GetKeyDown(KeyCode.E);
+        Map = Input.GetKeyDown(KeyCode.M);
     }
 
 
